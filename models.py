@@ -18,3 +18,12 @@ class Price(base):
         self.name = name
         self.symbol = symbol
         self.price = price
+
+class Historical(base):
+    __tablename__ = 'Historical0xTable'
+    Date = Column(VARCHAR, primary_key=True)
+    Price = Column(MONEY)
+
+    def __init__(self, Date, Price):
+        self.Date = Date
+        self.Price = Price

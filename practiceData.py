@@ -3,14 +3,16 @@ import json
 
 import secrets
 import models
-from models import Price
+from models import Price, Historical
 from sqlalchemy.orm import sessionmaker
 import psycopg2
 
 
 print('Layer 1s are coins like BTC or LTC while Tokens are on L2s like ERC20s/ERC721s')
 choice = str(input('choose which one to look up: coin or token? '))
+# raise Error if not coin or token
 choice2 = str(input('Latest price or historical?: '))
+# raise Error here if not right
 
 
 
@@ -64,9 +66,23 @@ if choice.lower() == 'token':
         response = requests.get(url, headers=headers, params=querystring)
         query2 = json.loads(response.content)
         # historical data api doesn't give a name in the output field
-        payload2 = query2['payload']['data']
+        payload2 = query2["payload"]["data"]
+        db_string2 = 'postgresql://postgres:' + secrets.password + '@localhost/Historical0x'
+        db2 = models.create_engine(db_string2, echo=False)
+        base = models.declarative_base()
+        base.metadata.create_all(db2)
+        db_Session2 = sessionmaker(db2)
+        db_session2 = db_Session2()
         for p in payload2:
             print(p[0], p[1])
+            result2 = Historical(
+                Date=p[0],
+                Price=p[1]
+            )
+            db_session2.add(result2)
+        db_session2.commit()
+        print('Entries Added')
+        db_session2.close()
         # print(json.dumps(payload2, indent=4, sort_keys=True))
 
         #print(response.text)
