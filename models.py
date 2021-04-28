@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column, String, PrimaryKeyConstraint, create_engine
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.dialects.postgresql import MONEY, VARCHAR
+from sqlalchemy.dialects.postgresql import MONEY, VARCHAR, TIMESTAMP, NUMERIC
 
 base = declarative_base()
 
@@ -20,10 +20,12 @@ class Price(base):
         self.price = price
 
 class Historical(base):
-    __tablename__ = 'Historical0xTable'
-    Date = Column(VARCHAR, primary_key=True)
-    Price = Column(MONEY)
+    __tablename__ = 'Historical0xTableMS'
+    Day = Column(TIMESTAMP, primary_key=True)
+    Price = Column(NUMERIC)
 
-    def __init__(self, Date, Price):
-        self.Date = Date
+    def __init__(self, Day, Price):
+        self.Day = Day
         self.Price = Price
+
+# either make new class for every new coin you want or do it in the practice data file

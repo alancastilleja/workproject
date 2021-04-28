@@ -1,6 +1,6 @@
 import requests
 import json
-
+import datetime
 import secrets
 import models
 from models import Price, Historical
@@ -53,13 +53,11 @@ if choice.lower() == 'token':
         print('entry added')
         db_session.close()
     if choice2.lower() == 'historical':
-        # thinking of calling latest api to just get name to attach to response
         # https://docs.amberdata.io/reference#get-historical-token-price for questions on querystring
-        # need to ask Brian several architecture questions and if each token gets their own database
         tokenAddress2 = str(input('input hash of token you want to look up? '))
         url = "https://web3api.io/api/v2/market/tokens/prices/"+tokenAddress2+"/historical"
 
-        querystring = {"timeInterval": "d", "timeFormat": "iso"}
+        querystring = {"timeInterval": "d", "timeFormat": "ms"}
 
         headers = {"x-api-key": secrets.api_key}
 
@@ -74,9 +72,10 @@ if choice.lower() == 'token':
         db_Session2 = sessionmaker(db2)
         db_session2 = db_Session2()
         for p in payload2:
-            print(p[0], p[1])
+            s = p[0] / 1000.0
+            print(s, p[1])
             result2 = Historical(
-                Date=p[0],
+                Day=datetime.datetime.fromtimestamp(s).strftime('%Y-%m-%d %H:%M:%S.%f'),
                 Price=p[1]
             )
             db_session2.add(result2)
